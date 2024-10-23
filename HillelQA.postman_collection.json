@@ -1,0 +1,1141 @@
+{
+	"info": {
+		"_postman_id": "d61be6fd-6f47-4295-9b87-e64c8237ba57",
+		"name": "HillelQA",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38593287"
+	},
+	"item": [
+		{
+			"name": "Users actions",
+			"item": [
+				{
+					"name": "Create user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const firstNames = [\"Maryna\", \"Olga\", \"Nastya\", \"Alex\", \"Mike\", \"Oleg\"];",
+									"const lastNames = [\"Zelenska\", \"Test\", \"Osychenko\", \"Ivashenko\", \"Brown\", \"Taylor\"];",
+									"const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];",
+									"const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];",
+									"",
+									"const userEmail = randomFirstName.toLowerCase() + \".\" + randomLastName.toLowerCase() + Math.floor(Math.random() * 1000) + \"@gmail.com\";",
+									"",
+									"const userPassword = \"QAuto\" + Math.floor(Math.random() * 10000) + \"te$t\";",
+									"",
+									"",
+									"pm.environment.set(\"randomFirstName\", randomFirstName);",
+									"pm.environment.set(\"randomLastName\", randomLastName);",
+									"pm.collectionVariables.set(\"userEmail\", userEmail);",
+									"pm.collectionVariables.set(\"userPassword\", userPassword);",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"userId\", pm.response.json().data.userId)",
+									"const jsonData = pm.response.json();",
+									"let requestData = JSON.parse(pm.request.body.raw);",
+									"let emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$/;",
+									"let email = requestData.email;",
+									"",
+									"var schema = {",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"status\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"data\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"userId\": {",
+									"          \"type\": \"integer\"",
+									"        },",
+									"        \"photoFilename\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"distanceUnits\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"currency\": {",
+									"          \"type\": \"string\"",
+									"        }",
+									"      },",
+									"      \"required\": [\"userId\", \"photoFilename\", \"distanceUnits\",\"currency\"]",
+									"    }",
+									"  },",
+									"  \"required\": [\"status\", \"data\"]",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Schema is valid\", function () {",
+									"  pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Check valid email format\", function () {",
+									"    pm.expect(email).to.match(emailRegex);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{randomFirstName}}\",\n  \"lastName\": \"{{randomLastName}}\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\",\n  \"repeatPassword\": \"{{userPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/auth/signup",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit profile",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const imageUrl = ['https://upload.wikimedia.org/wikipedia/commons/7/74/A-Cat.jpg',",
+									"       'https://images.all-free-download.com/images/thumbjpg/cat_eyes_face_218865.jpg',",
+									"       'https://thumbs.dreamstime.com/b/free-photo-animals-grey-cat-persifona-illustrations-jpg-persa-cute-lady-kitten-kitty-furry-friend-95434549.jpg']",
+									"",
+									"const randomUrl = imageUrl[Math.floor(Math.random() * imageUrl.length)];       ",
+									"",
+									"pm.sendRequest(randomUrl, function (err, response) {",
+									"    if (err) {",
+									"        console.error('Error:', err);",
+									"    } else {",
+									"        if (response && response.stream) {",
+									"            const base64Image = response.stream.toString('base64');",
+									"            pm.environment.set('base64Image', base64Image);",
+									"        } else {",
+									"            console.error('No data');",
+									"        }",
+									"    }",
+									"});",
+									"",
+									"const firstNames = [\"HillelAQA\", \"Tester\", \"Maryna\", \"Maria\", \"Dmytro\", \"Alex\"];",
+									"const lastNames = [\"Hillel\", \"AQA\", \"JS\", \"Postman\", \"Zelenska\", \"JSON\"];",
+									"const countries = [\"Ukraine\", \"USA\", \"Germany\", \"France\", \"Italy\", \"Spain\"];",
+									"",
+									"",
+									"const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];",
+									"const randomLastName = lastNames[Math.floor(Math.random() * lastNames.length)];",
+									"const randomCountry = countries[Math.floor(Math.random() * countries.length)];",
+									"",
+									"function getRandomDate(start, end) {",
+									"    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));",
+									"    return date.toISOString();",
+									"}",
+									"const randomDateBirth = getRandomDate(new Date(1960, 0, 1), new Date(2015, 0, 1));",
+									"",
+									"pm.environment.set(\"randomFirstName\", randomFirstName);",
+									"pm.environment.set(\"randomLastName\", randomLastName);",
+									"pm.environment.set(\"randomDateBirth\", randomDateBirth);",
+									"pm.environment.set(\"randomCountry\", randomCountry);",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let requestData = JSON.parse(pm.request.body.raw);",
+									"let responseData = pm.response.json();",
+									"",
+									"pm.test(\"Check profile name\", function () {",
+									"    pm.expect(responseData.data.name).to.eql(requestData.name);",
+									"});",
+									"",
+									"pm.test(\"Check profile name\", function () {",
+									"    pm.expect(responseData.data.name).to.eql(requestData.name);",
+									"});",
+									"",
+									"pm.test(\"Check profile lastName\", function () {",
+									"    pm.expect(responseData.data.lastName).to.eql(requestData.lastName);",
+									"});",
+									"",
+									"pm.test(\"Check profile dateBirth\", function () {",
+									"    let responseDate = responseData.data.dateBirth;",
+									"    let requestDate = requestData.dateBirth;",
+									"",
+									"    let responseDatePart = responseDate.split('T')[0]; ",
+									"    let requestDatePart = requestDate.split('T')[0];",
+									"",
+									"    pm.expect(responseDatePart).to.eql(requestDatePart);",
+									"});",
+									"",
+									"pm.test(\"Check profile country\", function () {",
+									"    pm.expect(responseData.data.country).to.eql(requestData.country);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"photo\": \"{{base64Image}}\",\n  \"name\": \"{{randomFirstName}}\",\n  \"lastName\": \"{{randomLastName}}\",\n  \"dateBirth\": \"{{randomDateBirth}}\",\n  \"country\": \"{{randomCountry}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/profile",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const oldPassword = pm.collectionVariables.get(\"userPassword\");",
+									"const newPassword = \"QAnew\" + Math.floor(Math.random() * 10000) + \"te$t\";",
+									"",
+									"pm.environment.set(\"oldPassword\", oldPassword);",
+									"pm.environment.set(\"newPassword\", newPassword);",
+									"pm.collectionVariables.set(\"userPassword\", newPassword);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let userId = pm.collectionVariables.get('userId');",
+									"let responseUserId = pm.response.json().data.userId;",
+									"",
+									"pm.test(\"Check user id\", function () {",
+									"    pm.expect(responseUserId).to.eql(userId);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"oldPassword\": \"{{oldPassword}}\",\n  \"password\": \"{{userPassword}}\",\n  \"repeatPassword\": \"{{userPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/password",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log Out",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check value in status var\", function () {",
+									"    pm.expect(response.json().status).to.eql(\"ok\");",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"  pm.expect(response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/auth/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Log in",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userEmail = pm.collectionVariables.get(\"userEmail\");",
+									"const userPassword = pm.collectionVariables.get(\"userPassword\"); ",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;",
+									"const jsonData = response.json();",
+									"",
+									"let userId = pm.collectionVariables.get('userId');",
+									"let responseUserId = jsonData.data.userId;",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check user id\", function () {",
+									"    pm.expect(responseUserId).to.eql(userId);",
+									"});",
+									"",
+									"pm.test(\"Check value in status var\", function () {",
+									"    pm.expect(jsonData.status).to.eql(\"ok\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\",\n  \"remember\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/auth/signin",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET current users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/current",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"current"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Validation",
+			"item": [
+				{
+					"name": "Create user endpoint",
+					"item": [
+						{
+							"name": "Validation for name field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Validate error message\", function () {",
+											"    const expectedErrorMessage = pm.environment.get(\"expectedErrorMessage\");",
+											"    pm.expect(pm.response.json().message).to.eql(expectedErrorMessage);",
+											"});",
+											"",
+											"let currentIndex = parseInt(pm.environment.get(\"currentIndex\")) || 0;",
+											"currentIndex++;",
+											"pm.environment.set(\"currentIndex\", currentIndex);",
+											"const nameKeys = pm.environment.get(\"nameKeys\");",
+											"",
+											"",
+											"if (currentIndex < nameKeys.length) {",
+											"    pm.execution.setNextRequest(pm.info.requestName);",
+											"} else {",
+											"    pm.execution.setNextRequest(\"Validation for email field\");",
+											"",
+											"    pm.environment.unset(\"nameKeys\");",
+											"    pm.environment.unset(\"currentName\");",
+											"    pm.environment.unset(\"expectedErrorMessage\");",
+											"    pm.environment.unset(\"currentIndex\");",
+											"}",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											"const namesWithExpectedErrors = {",
+											"    \"A\": \"Name has to be from 2 to 20 characters long\",",
+											"    \"TooLongNameThatExceed\": \"Name has to be from 2 to 20 characters long\",",
+											"    \"\": \"\\\"name\\\" is not allowed to be empty\",",
+											"    \" name with space \": \"Name is invalid\",",
+											"    \"NameWith$Symbol\": \"Name is invalid\"",
+											"};",
+											"",
+											"const nameKeys = Object.keys(namesWithExpectedErrors);",
+											"let currentIndex = parseInt(pm.environment.get(\"currentIndex\")) || 0;",
+											"const currentName = nameKeys[currentIndex];",
+											"const expectedErrorMessage = namesWithExpectedErrors[currentName];",
+											"",
+											"pm.environment.set('nameKeys', nameKeys)    ",
+											"pm.environment.set(\"currentName\", currentName);",
+											"pm.environment.set(\"expectedErrorMessage\", expectedErrorMessage);",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"{{currentName}}\",\n  \"lastName\": \"Zelenska\",\n  \"email\": \"osychenkomarina@gmail.com\",\n  \"password\": \"Test12345&\",\n  \"repeatPassword\": \"Test12345&\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/auth/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"auth",
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Validation for email field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Validate error message\", function () {",
+											"    const expectedErrorMessage = pm.environment.get(\"expectedErrorMessage\");",
+											"    pm.expect(pm.response.json().message).to.eql(expectedErrorMessage);",
+											"});",
+											"",
+											"let currentIndex = parseInt(pm.environment.get(\"currentIndex\")) || 0;",
+											"currentIndex++;",
+											"pm.environment.set(\"currentIndex\", currentIndex);",
+											"const emailKeys = pm.environment.get(\"emailKeys\");",
+											"",
+											"",
+											"if (currentIndex < emailKeys.length) {",
+											"    pm.execution.setNextRequest(pm.info.requestName);",
+											"} else {",
+											"    pm.execution.setNextRequest(\"Change email validation\");",
+											"",
+											"    pm.environment.unset(\"emailKeys\");",
+											"    pm.environment.unset(\"currentEmail\");",
+											"    pm.environment.unset(\"expectedErrorMessage\");",
+											"    pm.environment.unset(\"currentIndex\");",
+											"}",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const emails = {",
+											"    \"test@\": \"Email is incorrect\",",
+											"    \"test.com\": \"Email is incorrect\",",
+											"    \"\": \"\\\"email\\\" is not allowed to be empty\"",
+											"};",
+											"",
+											"const emailKeys = Object.keys(emails);",
+											"let currentIndex = parseInt(pm.environment.get(\"currentIndex\")) || 0;",
+											"const currentEmail = emailKeys[currentIndex];",
+											"const expectedErrorMessage = emails[currentEmail];",
+											"",
+											"pm.environment.set('emailKeys', emailKeys)    ",
+											"pm.environment.set(\"currentEmail\", currentEmail);",
+											"pm.environment.set(\"expectedErrorMessage\", expectedErrorMessage);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Maryna\",\n  \"lastName\": \"Zelenska\",\n  \"email\": \"{{currentEmail}}\",\n  \"password\": \"Test12345&\",\n  \"repeatPassword\": \"Test12345&\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/auth/signup",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"auth",
+										"signup"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User profile",
+					"item": [
+						{
+							"name": "Validation for change user email",
+							"item": [
+								{
+									"name": "Change email validation",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"Validate error message\", function () {",
+													"    const expectedErrorMessage = pm.environment.get(\"expectedErrorMessage\");",
+													"    pm.expect(pm.response.json().message).to.eql(expectedErrorMessage);",
+													"});",
+													"",
+													"let currentIndex = parseInt(pm.environment.get(\"currentIndex\")) || 0;",
+													"currentIndex++;",
+													"pm.environment.set(\"currentIndex\", currentIndex);",
+													"const emailKeys = pm.environment.get(\"emailKeys\");",
+													"",
+													"",
+													"if (currentIndex < emailKeys.length) {",
+													"    pm.execution.setNextRequest(pm.info.requestName);",
+													"} else {",
+													"    pm.execution.setNextRequest(\"Get cars brands\");",
+													"",
+													"    pm.environment.unset(\"emailKeys\");",
+													"    pm.environment.unset(\"currentEmail\");",
+													"    pm.environment.unset(\"expectedErrorMessage\");",
+													"    pm.environment.unset(\"currentIndex\");",
+													"}",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"const emails = {",
+													"    \"test@\": \"Email is incorrect\",",
+													"    \"test.com\": \"Email is incorrect\",",
+													"    \"\": \"\\\"email\\\" is not allowed to be empty\",",
+													"};",
+													"",
+													"const emailKeys = Object.keys(emails);",
+													"let currentIndex = parseInt(pm.environment.get(\"currentIndex\")) || 0;",
+													"const currentEmail = emailKeys[currentIndex];",
+													"const expectedErrorMessage = emails[currentEmail];",
+													"",
+													"pm.environment.set('emailKeys', emailKeys)    ",
+													"pm.environment.set(\"currentEmail\", currentEmail);",
+													"pm.environment.set(\"expectedErrorMessage\", expectedErrorMessage);",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"{{currentEmail}}\",\n  \"password\": \"Qwerty12345\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{url}}/users/email",
+											"host": [
+												"{{url}}"
+											],
+											"path": [
+												"users",
+												"email"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Cars actions",
+			"item": [
+				{
+					"name": "Get cars brands",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"const brandsIds = response.data.map(item => item.id);",
+									"",
+									"let randomIndex = Math.floor(Math.random() * brandsIds.length);",
+									"let randomBrand = brandsIds[randomIndex];",
+									"pm.collectionVariables.set('randomBrand', randomBrand)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cars/brands",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cars",
+								"brands"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get cars models",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const brandId = pm.collectionVariables.get(\"randomBrand\");",
+									"const response = pm.response.json();",
+									"",
+									"const filteredBrands = response.data.filter(car => car.carBrandId === brandId);",
+									"",
+									"let randomIndex = Math.floor(Math.random() * filteredBrands.length);",
+									"let randomModel =  filteredBrands[randomIndex].id;",
+									"",
+									"pm.collectionVariables.set(\"randomModel\", randomModel)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/cars/models",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cars",
+								"models"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Creates new car",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomBrand = pm.collectionVariables.get(\"randomBrand\");",
+									"const randomModel = pm.collectionVariables.get(\"randomModel\");",
+									"const randomNumber = Math.floor(Math.random() * (300 - 10 + 1)) + 10;",
+									"",
+									"pm.collectionVariables.set(\"randomBrand\", randomBrand)",
+									"pm.collectionVariables.set(\"randomModel\", randomModel)",
+									"pm.collectionVariables.set(\"randomNumber\", randomNumber)",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response;",
+									"const jsonData = response.json();",
+									"const carId = jsonData['data']['id']",
+									"",
+									"",
+									"pm.collectionVariables.set('carId', carId)",
+									"const randomBrand = pm.collectionVariables.get(\"randomBrand\");",
+									"const randomModel = pm.collectionVariables.get(\"randomModel\");",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is 201\", function () {",
+									"    response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check value in status var\", function () {",
+									"    pm.expect(jsonData.status).to.eql(\"ok\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Check brand in response\"), function() {",
+									"    pm.expect(jsonData.data.carBrandId).to.eql(randomBrand);",
+									"}",
+									"",
+									"pm.test(\"Check model in response\"), function() {",
+									"    pm.expect(jsonData.data.carModelId).to.eql(randomModel);",
+									"}",
+									"",
+									"pm.test(\"Check created Date\", function () {",
+									"    let responseCreatedDate = jsonData.data.carCreatedAt;",
+									"    let responseDatePart = responseCreatedDate.split('T')[0]; ",
+									"",
+									"    let today = new Date();",
+									"    let year = today.getFullYear();",
+									"    let month = today.getMonth() + 1;",
+									"    let day = today.getDate();",
+									"",
+									"    if (month < 10) {",
+									"        month = '0' + month;",
+									"    }",
+									"    if (day < 10) {",
+									"        day = '0' + day;",
+									"    }",
+									"        let expectedDate = `${year}-${month}-${day}`;",
+									"        pm.expect(responseDatePart).to.eql(expectedDate);",
+									"    });",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"carBrandId\": {{randomBrand}},\n  \"carModelId\": {{randomModel}},\n  \"mileage\": {{randomNumber}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/cars",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cars"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET current user cars",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const carId = pm.collectionVariables.get(\"carId\");",
+									"",
+									"let data = pm.response.json().data;",
+									"let carData = data.find(car => car.id === carId);",
+									"",
+									"let newMileage;",
+									"if (carData) {",
+									"    newMileage = carData.mileage + 10;",
+									"} else {",
+									"    newMileage = Math.floor(Math.random() * (300 - 10 + 1)) + 10;",
+									"}",
+									"",
+									"pm.collectionVariables.set(\"newMileage\", newMileage);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "id",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/cars",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"cars"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add expenses",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const car = pm.collectionVariables.get(\"carId\");",
+									"const liters = Math.floor(Math.random() * (30 - 5 + 1)) + 10;",
+									"const today = new Date();",
+									"const date = today.toISOString().split('T')[0];",
+									"const totalCost = Math.floor(Math.random() * (30000 - 5000 + 1)) + 10;",
+									"const newMileage = pm.collectionVariables.get(\"newMileage\");",
+									"",
+									"pm.collectionVariables.set(\"car\", car);",
+									"pm.collectionVariables.set(\"liters\", liters);",
+									"pm.collectionVariables.set(\"date\", date)",
+									"pm.collectionVariables.set(\"totalCost\", totalCost)",
+									"pm.collectionVariables.set(\"newMileage\", newMileage + totalCost)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"carId\": {{car}},\n  \"reportedAt\": \"{{date}}\",\n  \"mileage\": {{newMileage}},\n  \"liters\": {{liters}},\n  \"totalCost\": {{totalCost}},\n  \"forceMileage\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/expenses",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Deletes user's account and current user session",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Check status param\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.status).to.eql('ok');",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "userPassword",
+			"value": ""
+		},
+		{
+			"key": "randomEmail",
+			"value": ""
+		},
+		{
+			"key": "userEmail",
+			"value": ""
+		},
+		{
+			"key": "fordId",
+			"value": ""
+		},
+		{
+			"key": "brandsIds",
+			"value": ""
+		},
+		{
+			"key": "randomBrand",
+			"value": ""
+		},
+		{
+			"key": "randomModel",
+			"value": ""
+		},
+		{
+			"key": "randomNumber",
+			"value": ""
+		},
+		{
+			"key": "mileage",
+			"value": ""
+		},
+		{
+			"key": "brand",
+			"value": ""
+		},
+		{
+			"key": "model",
+			"value": ""
+		},
+		{
+			"key": "liters",
+			"value": ""
+		},
+		{
+			"key": "date",
+			"value": ""
+		},
+		{
+			"key": "totalCost",
+			"value": ""
+		},
+		{
+			"key": "carId",
+			"value": ""
+		},
+		{
+			"key": "car",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "newMileage",
+			"value": ""
+		},
+		{
+			"key": "currentName",
+			"value": ""
+		},
+		{
+			"key": "expectedErrorMessage",
+			"value": ""
+		},
+		{
+			"key": "currentIndex",
+			"value": ""
+		}
+	]
+}
