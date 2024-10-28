@@ -1,0 +1,10 @@
+[
+    {
+        "environment": "dev",
+        "url": "https://qauto2.forstudy.space/api"
+    },
+    {
+        "environment": "prod",
+        "url": "https://qauto.forstudy.space/api"
+    }
+]
